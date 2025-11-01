@@ -14,7 +14,6 @@ def boot(data,N,ALPHA,B,models,sen,tau,i,start):
     estSL=list()
     estTL=list()
     estXL=list()
-    estPSXL=list()
     estDRL=list()
 
     coverage_pt=list()
@@ -49,7 +48,9 @@ def boot(data,N,ALPHA,B,models,sen,tau,i,start):
         bootsample1=data1.sample(n=len(data1),replace=True)
         bootsample0=data0.sample(n=len(data0),replace=True)
         bootsample=pd.concat([bootsample1,bootsample0])
+    
         
+
         tmp=ml.TLearner(bootsample,N,ALPHA,models)
 
         if not tmp[0]:
@@ -61,14 +62,11 @@ def boot(data,N,ALPHA,B,models,sen,tau,i,start):
 
             estSL.append(ml.SLearner(bootsample,N,ALPHA,models))
 
-        #end_time=time.time()
-
-        #print(end_time-start_time)
-
-        ests= [estSL,estTL,estXL,estPSXL,estDRL]
+        ests= [estSL,estTL,estXL,estDRL]
     for est in ests:
         est.sort()
 
+        #parcentile
         tmp_LCI_pt=(est[math.floor((B-1)*(1-0.95))]+est[math.ceil((B-1)*(1-0.95))])/2
         tmp_UCI_pt=(est[math.floor((B-1)*0.95)]+est[math.ceil((B-1)*0.95)])/2
 
@@ -84,7 +82,7 @@ def boot(data,N,ALPHA,B,models,sen,tau,i,start):
                              loc=np.mean(est),
                              scale=stats.tstd(est))
         
-
+        #t-dist
         LCI_t.append(tmp_t[0])
         UCI_t.append(tmp_t[1])
 
@@ -99,13 +97,8 @@ def boot(data,N,ALPHA,B,models,sen,tau,i,start):
                 writer=csv.writer(f)
                 writer.writerow(est)
             estvar.append(99999.99999)
-
         
-
-            
-        
-        
-        print(estvar)
+        #print(estvar)
 
     estvar.extend(LCI_pt)
     estvar.extend(UCI_pt)
