@@ -28,7 +28,7 @@ def boot(data,N,ALPHA,B,models,sen,tau,i,start):
 
     tau_true=np.mean(ALPHA)
 
-    methods=["SL","TL","XL","PSXL","DRL"]
+    methods=["SL","TL","XL","DRL"]
 
     random.seed(524) 
 
@@ -49,14 +49,7 @@ def boot(data,N,ALPHA,B,models,sen,tau,i,start):
         bootsample1=data1.sample(n=len(data1),replace=True)
         bootsample0=data0.sample(n=len(data0),replace=True)
         bootsample=pd.concat([bootsample1,bootsample0])
-
-        #print(bootsample0.head())
-        #print(bootsample1.head())
-        #print(bootsample.head())
-
-    
         
-
         tmp=ml.TLearner(bootsample,N,ALPHA,models)
 
         if not tmp[0]:
@@ -64,8 +57,7 @@ def boot(data,N,ALPHA,B,models,sen,tau,i,start):
         else:        
             estTL.append(tmp[0])
             estXL.append(tmp[1])
-            estPSXL.append(tmp[2])
-            estDRL.append(tmp[3])
+            estDRL.append(tmp[2])
 
             estSL.append(ml.SLearner(bootsample,N,ALPHA,models))
 
